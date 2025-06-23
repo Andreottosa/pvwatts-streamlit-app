@@ -22,8 +22,16 @@ if input_password == PASSWORD:
     tilt = st.number_input("Tilt Angle (°):", value=30.0)
     azimuth = st.number_input("Azimuth (°) (e.g., 0=N, 90=E, 180=S, 270=W):", value=0.0)
     losses = st.number_input("System Losses (%):", value=0.0)
-    array_type = st.selectbox("Array Type:", [0, 1, 2], format_func=lambda x: ["Fixed - Roof Mount", "Fixed - Ground Mount", "Tracking"][x])
-    module_type = st.selectbox("Module Type:", [0, 1, 2], format_func=lambda x: ["Standard (-15% efficiency)", "Premium (-10%)", "Thin film (-20%)"][x])
+    array_type = st.selectbox(
+        "Array Type:",
+        [0, 1, 2],
+        format_func=lambda x: ["Fixed - Roof Mount", "Fixed - Ground Mount", "Tracking"][x]
+    )
+    module_type = st.selectbox(
+        "Module Type:",
+        [0, 1, 2],
+        format_func=lambda x: ["Standard (-15% efficiency)", "Premium (-10%)", "Thin film (-20%)"][x]
+    )
 
     if st.button("Run API Call"):
         if not API_KEY:
@@ -41,8 +49,14 @@ if input_password == PASSWORD:
                 data = r.json()
                 if "outputs" in data:
                     solrad_monthly = data["outputs"]["solrad_monthly"]
-                    st.success(f"🌞 Minimum: {min(solrad_monthly):.2f} kWh/m²/day in {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][solrad_monthly.index(min(solrad_monthly))]}")
-                    st.success(f"🌞 Maximum: {max(solrad_monthly):.2f} kWh/m²/day in {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][solrad_monthly.index(max(solrad_monthly))]}")
+                    months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+                    min_val = min(solrad_monthly)
+                    max_val = max(solrad_monthly)
+                    avg_min_max = (min_val + max_val) / 2
+
+                    st.success(f"🌞 Minimum: {min_val:.2f} kWh/m²/day in {months[solrad_monthly.index(min_val)]}")
+                    st.success(f"🌞 Maximum: {max_val:.2f} kWh/m²/day in {months[solrad_monthly.index(max_val)]}")
+                    st.success(f"📊 Average of Min & Max: {avg_min_max:.2f} kWh/m²/day")
                     st.info(f"📉 Annual Average (12 month): {data['outputs']['solrad_annual']:.2f} kWh/m²/day")
                 else:
                     st.error("⚠ API returned no data.")
