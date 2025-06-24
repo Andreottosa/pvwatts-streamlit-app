@@ -16,7 +16,7 @@ if input_password == PASSWORD:
     st.markdown("## 🌞 PVWatts API Solar Estimator\n**(Secure Login + API Key)**")
 
     # Input form
-    system_capacity = st.number_input("Enter Panel Size (Wp):", value=330) / 1000
+    system_capacity = st.number_input("Enter Panel Size (kWp):", value=330) 
     lat = st.number_input("Latitude (°):", value=-33.9700)
     lon = st.number_input("Longitude (°):", value=18.3400)
     tilt = st.number_input("Tilt Angle (°):", value=30.0)
