@@ -12,30 +12,34 @@ input_password = st.text_input("Enter access password:", type="password")
 
 if input_password == PASSWORD:
     st.success("🔓 Access granted.")
-
     st.markdown("## 🌞 PVWatts API Solar Estimator\n**(Secure Login + API Key)**")
 
-    # Input form
-    system_capacity = st.number_input("Enter Panel Size (kWp):", min_value=0.05, value=1.0)
-    lat = st.number_input("Latitude (°):", value=-33.9700)
-    lon = st.number_input("Longitude (°):", value=18.3400)
-    tilt = st.number_input("Tilt Angle (°):", value=30.0)
-    azimuth = st.number_input("Azimuth (°) (e.g., 0=N, 90=E, 180=S, 270=W):", value=0.0)
-    losses = st.number_input("System Losses (%):", value=0.0)
-    array_type = st.selectbox(
-        "Array Type:",
-        [0, 1, 2],
-        format_func=lambda x: ["Fixed - Roof Mount", "Fixed - Ground Mount", "Tracking"][x]
-    )
-    module_type = st.selectbox(
-        "Module Type:",
-        [0, 1, 2],
-        format_func=lambda x: ["Standard (-15% efficiency)", "Premium (-10%)", "Thin film (-20%)"][x]
-    )
+    # --- Input Form ---
+    with st.form(key="input_form"):
+        system_capacity = st.number_input("Enter Panel Size (kWp):", min_value=0.05, value=1.0)
+        lat = st.number_input("Latitude (°):", value=-33.9700)
+        lon = st.number_input("Longitude (°):", value=18.3400)
+        tilt = st.number_input("Tilt Angle (°):", value=30.0)
+        azimuth = st.number_input("Azimuth (°) (0=N, 90=E, 180=S, 270=W):", value=0.0)
+        losses = st.number_input("System Losses (%):", min_value=0.0, max_value=100.0, value=0.0)
+        
+        array_type = st.selectbox(
+            "Array Type:",
+            [0, 1, 2],
+            format_func=lambda x: ["Fixed - Roof Mount", "Fixed - Ground Mount", "Tracking"][x]
+        )
+        module_type = st.selectbox(
+            "Module Type:",
+            [0, 1, 2],
+            format_func=lambda x: ["Standard (-15%)", "Premium (-10%)", "Thin film (-20%)"][x]
+        )
 
-    if st.button("Run API Call"):
+        submit_button = st.form_submit_button("Run API Call")
+
+    # --- API Call on Submit ---
+    if submit_button:
         if not API_KEY:
-            st.error("❌ API key is missing. Please set it in Streamlit secrets or environment variables.")
+            st.error("❌ API key is missing. Please set it in Streamlit secrets.")
         else:
             url = (
                 f"https://developer.nrel.gov/api/pvwatts/v6.json?"
@@ -62,5 +66,6 @@ if input_password == PASSWORD:
                     st.error("⚠ API returned no data.")
             except Exception as e:
                 st.error(f"❌ API error: {e}")
+
 else:
     st.warning("🔒 Access restricted. Please enter correct password.")
